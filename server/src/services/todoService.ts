@@ -117,3 +117,41 @@ export function deleteTodo(id: string): boolean {
   todos.splice(index, 1);
   return true;
 }
+
+// Get completion statistics for the last 7 days
+export interface DailyStats {
+  date: string; // YYYY-MM-DD format
+  completed: number;
+}
+
+export function getLast7DaysStats(): DailyStats[] {
+  const stats: DailyStats[] = [];
+  const today = new Date();
+  
+  // Pre-group todos by completion date for O(n) performance
+  const completionsByDate = new Map<string, number>();
+  
+  todos.forEach((todo) => {
+    if (todo.completedAt) {
+      const dateStr = todo.completedAt.split('T')[0]; // YYYY-MM-DD
+      completionsByDate.set(dateStr, (completionsByDate.get(dateStr) || 0) + 1);
+    }
+  });
+  
+  // Generate stats for last 7 days (including today)
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    date.setHours(0, 0, 0, 0); // Start of day
+    
+    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const completedCount = completionsByDate.get(dateStr) || 0;
+    
+    stats.push({
+      date: dateStr,
+      completed: completedCount,
+    });
+  }
+  
+  return stats;
+}

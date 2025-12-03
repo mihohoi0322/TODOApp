@@ -6,9 +6,10 @@ import { Navigation } from './components/Navigation';
 import { TodoForm } from './components/TodoForm';
 import { TodoList } from './components/TodoList';
 import { CompletedTodayView } from './components/CompletedTodayView';
+import { GraphView } from './components/GraphView';
 import { ConfirmDialog } from './components/ConfirmDialog';
 
-type FilterType = 'inbox' | 'today' | 'upcoming' | 'completedToday';
+type FilterType = 'inbox' | 'today' | 'upcoming' | 'completedToday' | 'graph';
 
 interface ConfirmDialogState {
   isOpen: boolean;
@@ -27,6 +28,12 @@ function App() {
 
   // Fetch todos when filter changes
   const loadTodos = useCallback(async () => {
+    // Skip loading todos for graph view
+    if (currentFilter === 'graph') {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -120,7 +127,7 @@ function App() {
       />
 
       <main className="app-main">
-        {currentFilter !== 'completedToday' && (
+        {currentFilter !== 'completedToday' && currentFilter !== 'graph' && (
           <TodoForm onAddTodo={handleAddTodo} />
         )}
 
@@ -128,6 +135,8 @@ function App() {
 
         {loading ? (
           <div className="loading">読み込み中...</div>
+        ) : currentFilter === 'graph' ? (
+          <GraphView />
         ) : currentFilter === 'completedToday' ? (
           <CompletedTodayView
             todos={todos}

@@ -9,6 +9,7 @@ export function Navigation({ currentFilter, onFilterChange }: NavigationProps) {
     { id: 'today', label: 'Today', icon: '📅' },
     { id: 'upcoming', label: '近日予定', icon: '📆' },
     { id: 'completedToday', label: '今日の完了', icon: '✅' },
+    { id: 'graph', label: 'グラフ', icon: '📊' },
   ];
 
   return (

@@ -5,9 +5,21 @@ import {
   createTodo,
   updateTodo,
   deleteTodo,
+  getLast7DaysStats,
 } from '../services/todoService.js';
 
 const router = Router();
+
+// GET /api/todos/stats/last7days - Get completion statistics for last 7 days
+router.get('/stats/last7days', (_req: Request, res: Response) => {
+  try {
+    const stats = getLast7DaysStats();
+    res.json({ stats });
+  } catch (error) {
+    console.error('Error getting stats:', error);
+    res.status(500).json({ error: 'Internal server error', status: 500 });
+  }
+});
 
 // GET /api/todos - Get all todos with optional filter
 router.get('/', (req: Request, res: Response) => {
