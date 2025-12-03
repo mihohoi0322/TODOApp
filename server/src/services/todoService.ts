@@ -117,3 +117,45 @@ export function deleteTodo(id: string): boolean {
   todos.splice(index, 1);
   return true;
 }
+
+// Get completion statistics for the last 7 days
+export interface DailyStats {
+  date: string; // YYYY-MM-DD format
+  completed: number;
+  total: number;
+}
+
+export function getLast7DaysStats(): DailyStats[] {
+  const stats: DailyStats[] = [];
+  const today = new Date();
+  
+  // Generate stats for last 7 days (including today)
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    date.setHours(0, 0, 0, 0); // Start of day
+    
+    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    // Count todos completed on this date
+    const completedCount = todos.filter((todo) => {
+      if (!todo.completedAt) return false;
+      const completedDate = new Date(todo.completedAt);
+      return completedDate.toISOString().split('T')[0] === dateStr;
+    }).length;
+    
+    // Count todos created on or before this date
+    const totalCount = todos.filter((todo) => {
+      const createdDate = new Date(todo.createdAt);
+      return createdDate.toISOString().split('T')[0] <= dateStr;
+    }).length;
+    
+    stats.push({
+      date: dateStr,
+      completed: completedCount,
+      total: totalCount,
+    });
+  }
+  
+  return stats;
+}

@@ -73,3 +73,27 @@ export async function deleteTodo(id: string): Promise<void> {
     throw new Error(error.error || 'Failed to delete todo');
   }
 }
+
+/**
+ * Fetch statistics for the last 7 days
+ */
+export interface DailyStats {
+  date: string;
+  completed: number;
+  total: number;
+}
+
+export interface StatsResponse {
+  stats: DailyStats[];
+}
+
+export async function fetchLast7DaysStats(): Promise<DailyStats[]> {
+  const response = await fetch(`${API_BASE}/todos/stats/last7days`);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch stats: ${response.statusText}`);
+  }
+  
+  const data: StatsResponse = await response.json();
+  return data.stats;
+}
