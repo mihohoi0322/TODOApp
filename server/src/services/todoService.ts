@@ -122,12 +122,21 @@ export function deleteTodo(id: string): boolean {
 export interface DailyStats {
   date: string; // YYYY-MM-DD format
   completed: number;
-  total: number;
 }
 
 export function getLast7DaysStats(): DailyStats[] {
   const stats: DailyStats[] = [];
   const today = new Date();
+  
+  // Pre-group todos by completion date for O(n) performance
+  const completionsByDate = new Map<string, number>();
+  
+  todos.forEach((todo) => {
+    if (todo.completedAt) {
+      const dateStr = todo.completedAt.split('T')[0]; // YYYY-MM-DD
+      completionsByDate.set(dateStr, (completionsByDate.get(dateStr) || 0) + 1);
+    }
+  });
   
   // Generate stats for last 7 days (including today)
   for (let i = 6; i >= 0; i--) {
@@ -136,24 +145,11 @@ export function getLast7DaysStats(): DailyStats[] {
     date.setHours(0, 0, 0, 0); // Start of day
     
     const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    // Count todos completed on this date
-    const completedCount = todos.filter((todo) => {
-      if (!todo.completedAt) return false;
-      const completedDate = new Date(todo.completedAt);
-      return completedDate.toISOString().split('T')[0] === dateStr;
-    }).length;
-    
-    // Count todos created on or before this date
-    const totalCount = todos.filter((todo) => {
-      const createdDate = new Date(todo.createdAt);
-      return createdDate.toISOString().split('T')[0] <= dateStr;
-    }).length;
+    const completedCount = completionsByDate.get(dateStr) || 0;
     
     stats.push({
       date: dateStr,
       completed: completedCount,
-      total: totalCount,
     });
   }
   

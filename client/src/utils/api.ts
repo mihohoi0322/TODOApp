@@ -80,7 +80,6 @@ export async function deleteTodo(id: string): Promise<void> {
 export interface DailyStats {
   date: string;
   completed: number;
-  total: number;
 }
 
 export interface StatsResponse {

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchLast7DaysStats, DailyStats } from '../utils/api';
 
-interface GraphViewProps {}
-
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
   const month = date.getMonth() + 1;
@@ -12,7 +10,7 @@ function formatDate(dateStr: string): string {
   return `${month}/${day}(${weekday})`;
 }
 
-export function GraphView(_props: GraphViewProps) {
+export function GraphView() {
   const [stats, setStats] = useState<DailyStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +82,10 @@ export function GraphView(_props: GraphViewProps) {
         <div className="summary-item">
           <span className="summary-label">1日平均完了数</span>
           <span className="summary-value">
-            {(stats.reduce((sum, s) => sum + s.completed, 0) / 7).toFixed(1)} 件
+            {stats.length > 0
+              ? (stats.reduce((sum, s) => sum + s.completed, 0) / stats.length).toFixed(1)
+              : '0.0'}{' '}
+            件
           </span>
         </div>
       </div>
