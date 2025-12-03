@@ -40,8 +40,9 @@ export function GraphView() {
     return <div className="error-message">{error}</div>;
   }
 
-  // Calculate max value for scaling
-  const maxCompleted = Math.max(...stats.map((s) => s.completed), 1);
+  // Calculate max value for scaling and total sum
+  const maxCompleted = stats.reduce((max, s) => Math.max(max, s.completed), 1);
+  const totalCompleted = stats.reduce((sum, s) => sum + s.completed, 0);
 
   return (
     <div className="graph-view">
@@ -75,17 +76,12 @@ export function GraphView() {
       <div className="graph-summary">
         <div className="summary-item">
           <span className="summary-label">7日間の合計完了数</span>
-          <span className="summary-value">
-            {stats.reduce((sum, s) => sum + s.completed, 0)} 件
-          </span>
+          <span className="summary-value">{totalCompleted} 件</span>
         </div>
         <div className="summary-item">
           <span className="summary-label">1日平均完了数</span>
           <span className="summary-value">
-            {stats.length > 0
-              ? (stats.reduce((sum, s) => sum + s.completed, 0) / stats.length).toFixed(1)
-              : '0.0'}{' '}
-            件
+            {stats.length > 0 ? (totalCompleted / stats.length).toFixed(1) : '0.0'} 件
           </span>
         </div>
       </div>
